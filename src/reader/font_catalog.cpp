@@ -15,6 +15,20 @@ const std::vector<std::filesystem::path> EXTRA_FONTS = EXTRA_FONTS_LIST;
 
 std::vector<std::string> available_fonts;
 
+auto test_font = [](std::filesystem::path file_path) {
+    auto norm_ext = to_lower(file_path.extension());
+    return std::filesystem::exists(file_path) && (norm_ext == ".ttf" || norm_ext == ".ttc");
+};
+
+void get_fonts_in_dir(const std::string& font_dir, std::vector<std::string>& available_fonts) {
+    for (const auto &entry: directory_listing(font_dir)) {
+        std::filesystem::path path = std::filesystem::path(font_dir) / entry.name;
+        if (!entry.is_dir && test_font(path)) {
+            available_fonts.push_back(path.string());
+        }
+    }
+}
+
 void discover_fonts()
 {
     if (available_fonts.size())
@@ -22,19 +36,9 @@ void discover_fonts()
         return;
     }
 
-    auto test_font = [](std::filesystem::path file_path) {
-        auto norm_ext = to_lower(file_path.extension());
-        return std::filesystem::exists(file_path) && (norm_ext == ".ttf" || norm_ext == ".ttc");
-    };
-
-    for (const auto &entry: directory_listing(FONT_DIR))
-    {
-        std::filesystem::path path = std::filesystem::path(FONT_DIR) / entry.name;
-        if (!entry.is_dir && test_font(path))
-        {
-            available_fonts.push_back(path.string());
-        }
-    }
+    get_fonts_in_dir(FONT_DIR, available_fonts);
+    get_fonts_in_dir(EXTRA_FONT_DIR, available_fonts);
+    get_fonts_in_dir(CUSTOM_FONT_DIR, available_fonts);
 
     for (const auto &path: EXTRA_FONTS)
     {

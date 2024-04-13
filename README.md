@@ -40,9 +40,9 @@ make -j
 
 Find app in `build/reader`.
 
-### MiyooCFW docker Cross-Compile
-
-If you're trying to build for uClibc compatible image, use this method
+### MiyooCFW Cross-Compile
+If you're trying to build for uClibc compatible image, use one of these two methods:
+- Docker  
 
 ```sh
 git clone https://github.com/Apaczer/pixel-reader
@@ -52,6 +52,13 @@ docker run --volume ./:/src/ -it miyoocfw/toolchain-shared-uclibc
 cd /src
 make CPPFLAGS="-DMIYOO -DUSER_FONTS"
 ```
+- Local (*)
+
+```sh
+make CROSS_COMPILE=/opt/miyoo/usr/bin/arm-miyoo-linux-uclibcgnueabi- SYSROOT=/opt/miyoo/arm-miyoo-linux-uclibcgnueabi/sysroot CPPFLAGS="-DMIYOO -DUSER_FONTS"
+```
+
+*Note: To relocate default SDK location (`/opt/miyoo`) run "relocate-sdk.sh" script from new placement.
 
 ### Miyoo Mini Cross-Compile
 
